@@ -14,8 +14,9 @@ There is additional 100ms latency in the modeling to mimic real-world delay betw
 I chose N=8 predictive steps and dt=0.3s. I had limited processor power at use and with larger number of steps the optimization took longer and the additional latency caused the model to run worse. Smaller numbers of N also gave worse performance especially in curves. I also tried smaller and larger values of dt with N=8, but they gave worse performance. 
 
 
-
 My MPC runs the car nicely up to 40mph. With faster velocities, I currently lack sufficient processing power to run longer simulations with larger N.
+
+
 ---
 
 ## Dependencies
