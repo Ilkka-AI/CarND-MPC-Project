@@ -79,7 +79,7 @@ int main() {
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
     string sdata = string(data).substr(0, length);
-    cout << sdata << endl;
+    //cout << sdata << endl;
     if (sdata.size() > 2 && sdata[0] == '4' && sdata[1] == '2') {
       string s = hasData(sdata);
       if (s != "") {
@@ -95,11 +95,11 @@ int main() {
           double v = (j[1]["speed"]);
           double steer_value= (j[1]["steering_angle"]);
           double throttle_value= (j[1]["throttle"]);
-// From miles per hour to meters per second
-v=v*0.44704;
+	  // From miles per hour to meters per second
+          v=v*0.44704;
 
           /*
-          * TODO: Calculate steering angle and throttle using MPC.
+          * Calculate steering angle and throttle using MPC.
           *
           * Both are in between [-1, 1].
           *
@@ -111,102 +111,57 @@ v=v*0.44704;
 
           //Display the MPC predicted trajectory 
 
-		vector<double> mpc_x_vals=ptsx;
-		vector<double> mpc_y_vals=ptsy;
-          //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
-          // the points in the simulator are connected by a Green line
-
-       //   msgJson["mpc_x"] = mpc_x_vals;
-       //   msgJson["mpc_y"] = mpc_y_vals;
 vector<double> waypoints_car_x(ptsx.size());
 vector<double> waypoints_car_y(ptsx.size());
-vector<double> dif_x(ptsx.size());
-vector<double> dif_y(ptsx.size());
+double dif_x;
+double dif_y;
 VectorXd wayx(ptsx.size());
 VectorXd wayy(ptsx.size());
-//cout << "hei hei"<< endl;
-for(unsigned int i=0;i<ptsx.size();i++){
-dif_x[i]=(ptsx[i]-px);
-dif_y[i]=(ptsy[i]-py);
-}
 
 for(unsigned int i=0;i<ptsx.size();i++){
-waypoints_car_x[i]=dif_x[i]*cos(-psi)-dif_y[i]*sin(-psi);
-waypoints_car_y[i]=dif_y[i]*cos(-psi)+dif_x[i]*sin(-psi);
-
-// Previously I had
-//waypoints_car_x[i]=dif_x[i]*cos(psi)-dif_y[i]*sin(-psi);
-//waypoints_car_y[i]=dif_y[i]*cos(psi)+dif_x[i]*sin(-psi);
-
+dif_x=ptsx[i]-px;
+dif_y=ptsy[i]-py;
+waypoints_car_x[i]=dif_x*cos(-psi)-dif_y*sin(-psi);
+waypoints_car_y[i]=dif_y*cos(-psi)+dif_x*sin(-psi);
+// Need these in VectorXd format
 wayx[i]=waypoints_car_x[i];
 wayy[i]=waypoints_car_y[i];
 }
 
-  Eigen::VectorXd coefs2 =polyfit(wayx,wayy,3);
-  cout << "coefs " << coefs2 << endl;
+Eigen::VectorXd coefs2 =polyfit(wayx,wayy,3);
 
-vector<double> wayx_intr;
-vector<double> wayy_intr;
-
-//for(int i=0;i<20;i=i+4){
-//wayx_intr.push_back(double(i));
-//wayy_intr.push_back(polyeval(coefs2,i));
-//}
 double cte=coefs2[0];
 double epsi= -atan(coefs2[1]);
 
-//double 
-//steer_value=msgJson["steering_angle"];
-//double 
-//throttle_value=msgJson["throttle"]; 
 const double Lf = 2.67;
+
+// As the car has 100ms latency, we simulate the car movement 100ms into the future
 int latency_ms=100;
-//int latency_ms=100;
 double dt=latency_ms/1000;
-//double LF=Lf;
 double x_new=v*dt;
 double y_new=0;
 double psii_new=-v/Lf*steer_value*dt;
-
 double v_new=v+throttle_value*dt;
 double cte_new = cte+v*sin(epsi)*dt;
-double epsi_new =epsi + psii_new;// v/Lf*steer_value*dt;
-//steer_value=-cte*0.3;
-//throttle_value=0.4;
+double epsi_new =epsi + psii_new; 
 
 VectorXd state_after_latency(6);
 state_after_latency << x_new,y_new,psii_new,v_new,cte_new,epsi_new;
 
+// Run optimization to find optimal actuator values
 vector <double> mpc_optimized=mpc.Solve(state_after_latency,coefs2);
-
-// Change then also from the MPC equations
 steer_value=mpc_optimized[0]/deg2rad(25);
-//steer_value=-mpc_optimized[0]/deg2rad(25);
-
-
 throttle_value=mpc_optimized[1];
-cout << "Steering result: steer" << steer_value << "throttle_value" << throttle_value <<endl;
 
-mpc_x_vals=mpc.plottable_trajectory_x;
-mpc_y_vals=mpc.plottable_trajectory_y;
-msgJson["mpc_x"] = mpc_x_vals;
-          msgJson["mpc_y"] = mpc_y_vals;
 msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = throttle_value;
+msgJson["throttle"] = throttle_value;
 
+msgJson["mpc_x"] =mpc.plottable_trajectory_x; 
+msgJson["mpc_y"] =mpc.plottable_trajectory_y; 
 
-vector<double> next_x_vals=wayx_intr;
-vector<double> next_y_vals=wayy_intr;
-
-
-          //Display the waypoints/reference line     
-          //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
-          // the points in the simulator are connected by a Yellow line
-
- //         msgJson["next_x"] = next_x_vals;
-  //        msgJson["next_y"] = next_y_vals;
-          msgJson["next_x"] = waypoints_car_x;
-          msgJson["next_y"] = waypoints_car_y;
+//Display the waypoints/reference line     
+msgJson["next_x"] = waypoints_car_x;
+msgJson["next_y"] = waypoints_car_y;
 
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
