@@ -1,6 +1,21 @@
-# CarND-Controls-MPC
+# CarND-Controls - Model Predictive Control
 Self-Driving Car Engineer Nanodegree Program
 
+
+Model predictive control was implemented to drive a car in a simulator. In MPC, a kinematic model describes the future movement of the car starting from the current position and velocity, distance from the trajectory and orientation errors and actuations (steering, throttle) taken.  
+
+
+With the model, the future movement of the vehicle can be simulated a few seconds into the future with given actuator values and the simulated trajectory can be compared to the waypoints the car is supposed to follow. One can then run an optimization to find the actuator values that would result in the closest match to the waypoints. The optimal actuator values are then updated as the new actuator values. This can be done real-time every 100ms or so to control the vehicle. 
+
+
+There is additional 100ms latency in the modeling to mimic real-world delay between deciding actuations and performing them. This can be modeled my simulating the car movement 100ms into the future and using that state as the starting point for the optimization. 
+
+
+I chose N=8 predictive steps and dt=0.3s. I had limited processor power at use and with larger number of steps the optimization took longer and the additional latency caused the model to run worse. Smaller numbers of N also gave worse performance especially in curves. I also tried smaller and larger values of dt with N=8, but they gave worse performance. 
+
+
+
+My MPC runs the car nicely up to 40mph. With faster velocities, I currently lack sufficient processing power to run longer simulations with larger N.
 ---
 
 ## Dependencies
