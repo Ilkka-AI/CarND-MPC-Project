@@ -111,57 +111,57 @@ int main() {
 
           //Display the MPC predicted trajectory 
 
-vector<double> waypoints_car_x(ptsx.size());
-vector<double> waypoints_car_y(ptsx.size());
-double dif_x;
-double dif_y;
-VectorXd wayx(ptsx.size());
-VectorXd wayy(ptsx.size());
+          vector<double> waypoints_car_x(ptsx.size());
+          vector<double> waypoints_car_y(ptsx.size());
+          double dif_x;
+          double dif_y;
+          VectorXd wayx(ptsx.size());
+          VectorXd wayy(ptsx.size());
 
-for(unsigned int i=0;i<ptsx.size();i++){
-dif_x=ptsx[i]-px;
-dif_y=ptsy[i]-py;
-waypoints_car_x[i]=dif_x*cos(-psi)-dif_y*sin(-psi);
-waypoints_car_y[i]=dif_y*cos(-psi)+dif_x*sin(-psi);
-// Need these in VectorXd format
-wayx[i]=waypoints_car_x[i];
-wayy[i]=waypoints_car_y[i];
-}
+          for(unsigned int i=0;i<ptsx.size();i++){
+            dif_x=ptsx[i]-px;
+            dif_y=ptsy[i]-py;
+            waypoints_car_x[i]=dif_x*cos(-psi)-dif_y*sin(-psi);
+            waypoints_car_y[i]=dif_y*cos(-psi)+dif_x*sin(-psi);
+            // Need these in VectorXd format
+            wayx[i]=waypoints_car_x[i];
+            wayy[i]=waypoints_car_y[i];
+          }
 
-Eigen::VectorXd coefs2 =polyfit(wayx,wayy,3);
+          Eigen::VectorXd coefs2 =polyfit(wayx,wayy,3);
 
-double cte=coefs2[0];
-double epsi= -atan(coefs2[1]);
+          double cte=coefs2[0];
+          double epsi= -atan(coefs2[1]);
 
-const double Lf = 2.67;
+          const double Lf = 2.67;
 
-// As the car has 100ms latency, we simulate the car movement 100ms into the future
-int latency_ms=100;
-double dt=latency_ms/1000;
-double x_new=v*dt;
-double y_new=0;
-double psii_new=-v/Lf*steer_value*dt;
-double v_new=v+throttle_value*dt;
-double cte_new = cte+v*sin(epsi)*dt;
-double epsi_new =epsi + psii_new; 
+          // As the car has 100ms latency, we simulate the car movement 100ms into the future
+          int latency_ms=100;
+          double dt=latency_ms/1000;
+          double x_new=v*dt;
+          double y_new=0;
+          double psii_new=-v/Lf*steer_value*dt;
+          double v_new=v+throttle_value*dt;
+          double cte_new = cte+v*sin(epsi)*dt;
+          double epsi_new =epsi + psii_new; 
 
-VectorXd state_after_latency(6);
-state_after_latency << x_new,y_new,psii_new,v_new,cte_new,epsi_new;
+          VectorXd state_after_latency(6);
+          state_after_latency << x_new,y_new,psii_new,v_new,cte_new,epsi_new;
 
-// Run optimization to find optimal actuator values
-vector <double> mpc_optimized=mpc.Solve(state_after_latency,coefs2);
-steer_value=mpc_optimized[0]/deg2rad(25);
-throttle_value=mpc_optimized[1];
+          // Run optimization to find optimal actuator values
+          vector <double> mpc_optimized=mpc.Solve(state_after_latency,coefs2);
+          steer_value=mpc_optimized[0]/deg2rad(25);
+          throttle_value=mpc_optimized[1];
 
-msgJson["steering_angle"] = steer_value;
-msgJson["throttle"] = throttle_value;
+          msgJson["steering_angle"] = steer_value;
+          msgJson["throttle"] = throttle_value;
 
-msgJson["mpc_x"] =mpc.plottable_trajectory_x; 
-msgJson["mpc_y"] =mpc.plottable_trajectory_y; 
+          msgJson["mpc_x"] =mpc.plottable_trajectory_x; 
+          msgJson["mpc_y"] =mpc.plottable_trajectory_y; 
 
-//Display the waypoints/reference line     
-msgJson["next_x"] = waypoints_car_x;
-msgJson["next_y"] = waypoints_car_y;
+          //Display the waypoints/reference line     
+          msgJson["next_x"] = waypoints_car_x;
+          msgJson["next_y"] = waypoints_car_y;
 
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
@@ -176,7 +176,7 @@ msgJson["next_y"] = waypoints_car_y;
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
            this_thread::sleep_for(chrono::milliseconds(latency_ms));
-//this_thread::sleep_for(chrono::milliseconds(0));
+      
 
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }

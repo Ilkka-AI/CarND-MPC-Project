@@ -33,7 +33,7 @@ const double Lf = 2.67;
   size_t epsi_start=5*N;
   size_t delta_start=6*N;
   size_t a_start=delta_start+(N-1);
-size_t ref_v=20; // this is a reasonably fast velocity
+size_t ref_v=25; // this is a reasonably fast velocity
 
 class FG_eval {
  public:
@@ -50,24 +50,33 @@ class FG_eval {
   
     // Cost function
 
+   double weight_cte=10;
+   double weight_epsi=10;
+   double weight_v=0.01;
+   double weight_delta=10;
+   double weight_a=0.01;
+   double weight_delta_change=10000;
+   double weight_a_change=1;
+
+
    fg[0]=0;
 	//error from the waypoints
     for (unsigned int t = 0; t < N; t++) {
-      fg[0] += 1*CppAD::pow(vars[cte_start + t], 2);
-      fg[0] += 1*CppAD::pow(vars[epsi_start + t], 2);
-      fg[0] += 0.005*CppAD::pow(vars[v_start + t] - ref_v, 2);
+      fg[0] += weight_cte*CppAD::pow(vars[cte_start + t], 2);
+      fg[0] += weight_epsi*CppAD::pow(vars[epsi_start + t], 2);
+      fg[0] += weight_v*CppAD::pow(vars[v_start + t] - ref_v, 2);
     }
 
     // Minimize the use of actuators.
     for (unsigned int t = 0; t < N - 1; t++) {
-      fg[0] += 100*CppAD::pow(vars[delta_start + t], 2);
-      fg[0] += 0.01*CppAD::pow(vars[a_start + t], 2);
+      fg[0] += weight_delta*CppAD::pow(vars[delta_start + t], 2);
+      fg[0] += weight_a*CppAD::pow(vars[a_start + t], 2);
     }
 
     // Minimize the value gap between sequential actuations.
     for (unsigned int t = 0; t < N - 2; t++) {
-      fg[0] += 10000*CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
-      fg[0] += 1*CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
+      fg[0] += weight_delta_change*CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
+      fg[0] += weight_a_change*CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
     }
     // The starting values of the simulation need to stay constant
     fg[1 + x_start] = vars[x_start];
@@ -99,8 +108,8 @@ class FG_eval {
   AD<double> delta0 = vars[delta_start + t - 1];
   AD<double> a0 = vars[a_start + t - 1];
 
-  AD<double> f0 = coeffs[0] + coeffs[1] * x0;
-  AD<double> psides0 = CppAD::atan(coeffs[1]);
+  AD<double> f0 = coeffs[0] + coeffs[1] * x0+ coeffs[2] * x0*x0+ coeffs[3] * x0*x0*x0;
+  AD<double> psides0 = CppAD::atan(coeffs[1]+coeffs[2]*x0*2+coeffs[3]*x0*x0*3);
 
   // Set the constraints 
   fg[1 + x_start + t] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
