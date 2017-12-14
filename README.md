@@ -13,7 +13,7 @@ The state of the car at time t is described x and y positions, velocity v and he
 
 The equations for updating the position of the vehicle are. 
 
-![alt text](equationimages/mpc-model2.PNG)
+![alt text](equationimages/mpc-model2.png)
 
 The error of the vehicle state from trajectory is updated as
 
