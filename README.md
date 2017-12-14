@@ -11,7 +11,7 @@ With the model, the future movement of the vehicle can be simulated a few second
 There is additional 100ms latency in the modeling to mimic real-world delay between deciding actuations and performing them. This can be modeled my simulating the car movement 100ms into the future and using that state as the starting point for the optimization. 
 
 
-I chose N=8 predictive steps and dt=0.3s. I had limited processor power at use and with larger number of steps the optimization took longer and the additional latency caused the model to run worse. With maximum N=8 dt of 0.3 In general a smaller dt (say 0.1) is better as the time resolution is better. Having larger N Smaller numbers of N also gave worse performance especially in curves. I also tried smaller and larger values of dt with N=8, but they gave worse performance. 
+I chose N=8 predictive steps and dt=0.3s. I had limited processor power at use and with larger number of steps the optimization took longer and the additional latency caused the model to run worse. With maximum N=8 dt I found dt=0.3 to work the best. In general a smaller dt (say 0.1) is better as the time resolution is better. Having larger N enables to the model to act better especially in curves as the the model can calculate a more intelligent path with more optimal velocity. Curves can then be driven faster, yet the car stays on the track. Smaller numbers of N also gave worse performance especially in curves. I also tried smaller and larger values of dt with N=8, but they gave worse performance. 
 
 
 My MPC runs the car nicely up to 40mph. With faster velocities, I currently lack sufficient processing power to run longer simulations with larger N.
