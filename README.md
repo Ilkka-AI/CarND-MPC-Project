@@ -7,6 +7,7 @@ Model predictive control was implemented to drive a car in a simulator. In MPC, 
 
 With the model, the future movement of the vehicle can be simulated a few seconds into the future with given actuator values and the simulated trajectory can be compared to the waypoints the car is supposed to follow. One can then run an optimization to find the actuator values that would result in the closest match to the waypoints. The optimal actuator values are then updated as the new actuator values. This can be done real-time every 100ms or so to control the vehicle. 
 
+![alt text](equationimages/mpc-constraints.PNG)
 
 There is additional 100ms latency in the modeling to mimic real-world delay between deciding actuations and performing them. This can be modeled my simulating the car movement 100ms into the future and using that state as the starting point for the optimization. 
 
