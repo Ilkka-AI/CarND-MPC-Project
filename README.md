@@ -5,7 +5,7 @@ Self-Driving Car Engineer Nanodegree Program
 Model predictive control was implemented to drive a car in a simulator. In MPC, a kinematic model describes the future movement of the car starting from the current position and velocity, distance from the trajectory and orientation errors and actuations (steering, throttle) taken.  
 
 
-With the model, the future movement of the vehicle can be simulated a few seconds into the future with given actuator values and the simulated trajectory can be compared to the waypoints the car is supposed to follow. One can then run an optimization to find the actuator values that would result in the closest match to the waypoints. The optimal actuator values are then updated as the new actuator values. This can be done real-time every 100ms or so to control the vehicle. 
+With the model, the future movement of the vehicle can be simulated a few seconds into the future (N steps of duration dt) with given actuator values and the simulated trajectory can be compared to the waypoints the car is supposed to follow. One can then run an optimization to find the actuator values that would result in the closest match to the waypoints. The optimal actuator values are then updated as the new actuator values. This can be done real-time every 100ms or so to control the vehicle. 
 
 ![alt text](equationimages/mpc-illustration.PNG)
 
