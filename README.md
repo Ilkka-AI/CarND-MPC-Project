@@ -15,11 +15,11 @@ The state of the car at time t is described by x and y positions, velocity v and
 <img src="equationimages/mpc-constraints.PNG" width="200">
 The equations for updating the position of the vehicle are. 
 
-![alt text3](equationimages/mpc-model2.PNG)
 
+<img src="equationimages/mpc-model2.PNG" width="400">
 We make a coordinate transformation from global coordinate system to car's coordinates which results in x=0, y=0, psi=0, making calculations easier. The errors of the vehicle's position cte and orientation e_psi from the trajectory to follow are then updated as
+<img src="equationimages/mpc-error_progression.png" width="400">
 
-![alt text4](equationimages/mpc-error_progression.png)
 
 
 
