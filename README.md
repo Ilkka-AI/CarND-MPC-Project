@@ -11,8 +11,8 @@ With the model, the future movement of the vehicle can be simulated a few second
 
 The state of the car at time t is described by x and y positions, velocity v and heading psi. The actuators for controlling the vehicle are throttle a and steering delta. The ranges of actuators are contraint as
 
-![alt text2](equationimages/mpc-constraints.PNG){:height="10px" width="10px"}
 
+<img src="equationimages/mpc-constraints.PNG" width="200" ">
 The equations for updating the position of the vehicle are. 
 
 ![alt text3](equationimages/mpc-model2.PNG)
