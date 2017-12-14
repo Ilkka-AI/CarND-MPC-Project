@@ -7,6 +7,8 @@ Model predictive control was implemented to drive a car in a simulator. In MPC, 
 
 With the model, the future movement of the vehicle can be simulated a few seconds into the future with given actuator values and the simulated trajectory can be compared to the waypoints the car is supposed to follow. One can then run an optimization to find the actuator values that would result in the closest match to the waypoints. The optimal actuator values are then updated as the new actuator values. This can be done real-time every 100ms or so to control the vehicle. 
 
+![alt text](equationimages/mpc-illustration.PNG)
+
 The state of the car at time t is described by x and y positions, velocity v and heading psi. The actuators for controlling the vehicle are throttle a and steering delta. The ranges of actuators are contraint as
 
 ![alt text](equationimages/mpc-constraints.PNG)
@@ -15,7 +17,7 @@ The equations for updating the position of the vehicle are.
 
 ![alt text](equationimages/mpc-model2.PNG)
 
-We make a coordinate transformation from global coordinate system to car's coordinates which results in x=0, y=0, psi=0, making calculations easier. The error of the vehicle's position and orientation from the trajectory to follow is then updated as
+We make a coordinate transformation from global coordinate system to car's coordinates which results in x=0, y=0, psi=0, making calculations easier. The errors of the vehicle's position cte and orientation e_psi from the trajectory to follow are then updated as
 
 ![alt text](equationimages/mpc-error_progression.png)
 
