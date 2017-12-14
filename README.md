@@ -17,7 +17,7 @@ The equations for updating the position of the vehicle are.
 
 The error of the vehicle state from trajectory is updated as
 
-![alt text](equationimages/mpc-error_progressions.png)
+![alt text](equationimages/mpc-error_progression.png)
 
 
 
