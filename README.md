@@ -5,16 +5,31 @@ Self-Driving Car Engineer Nanodegree Program
 Model predictive control was implemented to drive a car in a simulator. In MPC, a kinematic model describes the future movement of the car starting from the current position and velocity, distance from the trajectory and orientation errors and actuations (steering, throttle) taken.  
 
 
-With the model, the future movement of the vehicle can be simulated a few seconds into the future with given actuator values and the simulated trajectory can be compared to the waypoints the car is supposed to follow. One can then run an optimization to find the actuator values that would result in the closest match to the waypoints. The optimal actuator values are then updated as the new actuator values. This can be done real-time every 100ms or so to control the vehicle. 
+With the model, the future movement of the vehicle can be simulated a few seconds into the future (N steps of duration dt) with given actuator values and the simulated trajectory can be compared to the waypoints the car is supposed to follow. One can then run an optimization to find the actuator values that would result in the closest match to the waypoints. The optimal actuator values are then updated as the new actuator values. This can be done real-time every 100ms or so to control the vehicle. 
+
+<img src="equationimages/mpc-illustration.PNG" width="200" height="200">
+
+The state of the car at time t is described by x and y positions, velocity v and heading psi. The actuators for controlling the vehicle are throttle a and steering delta. The ranges of actuators are contraint as
+
+
+<img src="equationimages/mpc-constraints.PNG" width="200">
+The equations for updating the position of the vehicle are. 
+
+
+<img src="equationimages/mpc-model2.PNG" width="400">
+We make a coordinate transformation from global coordinate system to car's coordinates which results in x=0, y=0, psi=0, making calculations easier. The errors of the vehicle's position cte and orientation e_psi from the trajectory to follow are then updated as
+<img src="equationimages/mpc-error_progression.png" width="400">
+
+
 
 
 There is additional 100ms latency in the modeling to mimic real-world delay between deciding actuations and performing them. This can be modeled my simulating the car movement 100ms into the future and using that state as the starting point for the optimization. 
 
 
-I chose N=8 predictive steps and dt=0.3s. I had limited processor power at use and with larger number of steps the optimization took longer and the additional latency caused the model to run worse. With maximum N=8 dt I found dt=0.3 to work the best. In general a smaller dt (say 0.1) is better as the time resolution is better. Having larger N enables to the model to act better especially in curves as the the model can calculate a more intelligent path with more optimal velocity. Curves can then be driven faster, yet the car stays on the track. Smaller numbers of N also gave worse performance especially in curves. I also tried smaller and larger values of dt with N=8, but they gave worse performance. 
+I chose N=8 predictive steps and dt=0.3s. I had limited processor power at use and with larger number of steps the optimization took longer and the additional latency caused the model to run worse. With maximum N=8 dt I found dt=0.3 to work the best. Smaller and larger dt gave worse performance. In general a smaller dt (say 0.1) is better as the time resolution is better. Having larger N enables to the model to act better especially in curves as the the model can calculate a more intelligent path with more optimal velocity. Curves can then be driven faster, yet the car stays on the track. 
 
 
-My MPC runs the car nicely up to 40mph. With faster velocities, I currently lack sufficient processing power to run longer simulations with larger N.
+My MPC runs the car nicely up to 50mph. With faster velocities, I currently lack sufficient processing power to run longer simulations with larger N which would allow driving faster.
 
 
 ---
